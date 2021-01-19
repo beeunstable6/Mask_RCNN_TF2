@@ -87,7 +87,7 @@ class BalloonDataset(utils.Dataset):
         subset: Subset to load: train or val
         """
         # Add classes. We have only one class to add.
-        self.add_class("balloon", 1, "balloon")
+        self.add_class("balloon", 1, "dog")
 
         # Train or validation dataset?
         assert subset in ["train", "val"]
@@ -120,7 +120,7 @@ class BalloonDataset(utils.Dataset):
             # Get the x, y coordinaets of points of the polygons that make up
             # the outline of each object instance. There are stores in the
             # shape_attributes (see json format above)
-            polygons = [r['shape_attributes'] for r in a['regions'].values()]
+            polygons = [r['shape_attributes'] for r in a['regions']]
 
             # load_mask() needs the image size to convert polygons to masks.
             # Unfortunately, VIA doesn't include it in JSON, so we must read
@@ -130,7 +130,7 @@ class BalloonDataset(utils.Dataset):
             height, width = image.shape[:2]
 
             self.add_image(
-                "balloon",
+                "dog",
                 image_id=a['filename'],  # use file name as a unique image id
                 path=image_path,
                 width=width, height=height,
