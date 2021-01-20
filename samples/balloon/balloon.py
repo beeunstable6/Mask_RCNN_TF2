@@ -27,6 +27,12 @@ Usage: import the module (see Jupyter notebooks for examples), or run from
     python3 balloon.py splash --weights=last --video=<URL or path to file>
 """
 
+if __name__ == '__main__':
+    import matplotlib
+    # Agg backend runs without a display
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+
 import os
 import sys
 import json
