@@ -220,7 +220,7 @@ def detect_and_color_splash(model, image_path=None, video_path=None):
 
     # Image or video?
     if image_path:
-        class_names=['balloon']
+        class_names=['BG','balloon']
         # Run model detection and generate the color splash effect
         print("Running on {}".format(args.image))
         # Read image
