@@ -65,7 +65,7 @@ class BalloonConfig(Config):
     IMAGES_PER_GPU = 2
 
     # Number of classes (including background)
-    NUM_CLASSES = 1 + 1  # Background + balloon
+    NUM_CLASSES = 1 + 2  # Background + balloon
 
     # Number of training steps per epoch
     STEPS_PER_EPOCH = 100
@@ -87,6 +87,7 @@ class BalloonDataset(utils.Dataset):
         """
         # Add classes. We have only one class to add.
         self.add_class("balloon", 1, "balloon")
+        self.add_class("balloon", 2, "dog")
 
         # Train or validation dataset?
         assert subset in ["train", "val"]
@@ -128,12 +129,14 @@ class BalloonDataset(utils.Dataset):
             image = skimage.io.imread(image_path)
             height, width = image.shape[:2]
 
+            names = [r['shape_attributes'] for r in a ['regions']]
+              
             self.add_image(
                 "balloon",
                 image_id=a['filename'],  # use file name as a unique image id
                 path=image_path,
                 width=width, height=height,
-                polygons=polygons)
+                polygons=polygons, names=names)
 
     def load_mask(self, image_id):
         """Generate instance masks for an image.
@@ -157,9 +160,17 @@ class BalloonDataset(utils.Dataset):
             rr, cc = skimage.draw.polygon(p['all_points_y'], p['all_points_x'])
             mask[rr, cc, i] = 1
 
+        class_ids = np.zeros([len(info["polygons"])])
+        for i, p in enumerate(class_names):
+              if p['balloon'] == 'balloon':
+                     class_ids[i] = 1
+              elif p['balloon'] == 'dog':
+                     class_ids[i] = 2
+        
+        class_ids = class_ids.astype(int)
         # Return mask, and array of class IDs of each instance. Since we have
         # one class ID only, we return an array of 1s
-        return mask.astype(np.bool), np.ones([mask.shape[-1]], dtype=np.int32)
+        return mask.astype(np.bool), class_ids
 
     def image_reference(self, image_id):
         """Return the path of the image."""
@@ -217,7 +228,7 @@ def detect_and_color_splash(model, image_path=None, video_path=None):
 
     # Image or video?
     if image_path:
-        class_names=['BG','balloon']
+        class_names=['BG','balloon', 'dog']
         # Run model detection and generate the color splash effect
         print("Running on {}".format(args.image))
         # Read image
