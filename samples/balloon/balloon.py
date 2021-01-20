@@ -120,7 +120,7 @@ class BalloonDataset(utils.Dataset):
             # Get the x, y coordinaets of points of the polygons that make up
             # the outline of each object instance. There are stores in the
             # shape_attributes (see json format above)
-            polygons = [r['shape_attributes'] for r in a['regions'].values()]
+            polygons = [r['shape_attributes'] for r in a['regions']]
 
             # load_mask() needs the image size to convert polygons to masks.
             # Unfortunately, VIA doesn't include it in JSON, so we must read
@@ -225,11 +225,13 @@ def detect_and_color_splash(model, image_path=None, video_path=None):
         image = skimage.io.imread(args.image)
         # Detect objects
         r = model.detect([image], verbose=1)[0]
+        visualize.display_instances(image,r['rois'],r['masks'],r['class_ids'], class_names, r['scores'], making_image=True)
+        plt.savefig("{:%Y%m%dT%H%M%S}.png".format(datetime.datetime.now())) 
         # Color splash
-        splash = color_splash(image, r['masks'])
+        #splash = color_splash(image, r['masks'])
         # Save output
         file_name = "splash_{:%Y%m%dT%H%M%S}.png".format(datetime.datetime.now())
-        skimage.io.imsave(file_name, splash)
+        #skimage.io.imsave(file_name, splash)
     elif video_path:
         import cv2
         # Video capture
