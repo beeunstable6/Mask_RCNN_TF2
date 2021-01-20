@@ -190,7 +190,7 @@ def train(model):
     print("Training network heads")
     model.train(dataset_train, dataset_val,
                 learning_rate=config.LEARNING_RATE,
-                epochs=5,
+                epochs=10,
                 layers='heads')
 
 
@@ -226,10 +226,12 @@ def detect_and_color_splash(model, image_path=None, video_path=None):
         # Detect objects
         r = model.detect([image], verbose=1)[0]
         # Color splash
-        splash = color_splash(image, r['masks'])
+        #splash = color_splash(image, r['masks'])
         # Save output
+        visualize.display_instances(image,r['rois'],r['masks'],r['class_ids'], class_names, r['scores'], making_image=True)
+        plt.savefig("{:%Y%m%dT%H%M%S}.png".format(datetime.datetime.now())
         file_name = "splash_{:%Y%m%dT%H%M%S}.png".format(datetime.datetime.now())
-        skimage.io.imsave(file_name, splash)
+        #skimage.io.imsave(file_name, splash)
     elif video_path:
         import cv2
         # Video capture
