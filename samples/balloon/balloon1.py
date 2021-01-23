@@ -204,6 +204,11 @@ def train(model):
                 epochs=10,
                 layers='heads')
 
+    model.train(dataset_train, dataset_val,
+                learning_rate=config.LEARNING_RATE,
+                epochs=15,
+                layers='all')
+
 
 def color_splash(image, mask):
     """Apply color splash effect.
