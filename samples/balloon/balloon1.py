@@ -121,6 +121,7 @@ class BalloonDataset(utils.Dataset):
             # the outline of each object instance. There are stores in the
             # shape_attributes (see json format above)
             polygons = [r['shape_attributes'] for r in a['regions']]
+            names = [r['region_attributes'] for r in a ['regions']]
 
             # load_mask() needs the image size to convert polygons to masks.
             # Unfortunately, VIA doesn't include it in JSON, so we must read
@@ -129,7 +130,6 @@ class BalloonDataset(utils.Dataset):
             image = skimage.io.imread(image_path)
             height, width = image.shape[:2]
 
-            names = [r['shape_attributes'] for r in a ['regions']]
               
             self.add_image(
                 "balloon",
