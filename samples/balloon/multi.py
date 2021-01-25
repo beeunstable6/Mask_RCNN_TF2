@@ -121,7 +121,7 @@ class BalloonDataset(utils.Dataset):
             # the outline of each object instance. There are stores in the
             # shape_attributes (see json format above)
             polygons = [r['shape_attributes'] for r in a['regions']]
-            objects = [s['region_attributes']['name'] for s in a ['regions']]
+            objects = [s['region_attributes']['balloon'] for s in a ['regions']]
             print('objects:', objects)
             name_dict = {'cat': 1, 'dog': 2}
             num_ids = [name_dict[a] for a in objects]
