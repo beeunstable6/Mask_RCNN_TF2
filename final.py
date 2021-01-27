@@ -121,13 +121,13 @@ class CustomDataset(utils.Dataset):
             # shape_attributes (see json format above)
             polygons = [r['shape_attributes'] for r in a['regions']] 
             # key = tuple(name_dict)
-            num_ids = [name_dict[a] for a in objects]
+            #num_ids = [name_dict[a] for a in objects]
      
             # num_ids = [int(n['Event']) for n in objects]
             # load_mask() needs the image size to convert polygons to masks.
             # Unfortunately, VIA doesn't include it in JSON, so we must read
             # the image. This is only managable since the dataset is tiny.
-            print("numids",num_ids)
+            #print("numids",num_ids)
             image_path = os.path.join(dataset_dir, a['filename'])
             image = skimage.io.imread(image_path)
             height, width = image.shape[:2]
