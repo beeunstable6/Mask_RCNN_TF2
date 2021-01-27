@@ -54,14 +54,14 @@ class CustomConfig(Config):
     Derives from the base Config class and overrides some values.
     """
     # Give the configuration a recognizable name
-    NAME = "object"
+    NAME = "dog"
 
     # We use a GPU with 12GB memory, which can fit two images.
     # Adjust down if you use a smaller GPU.
     IMAGES_PER_GPU = 2
 
     # Number of classes (including background)
-    NUM_CLASSES = 1 + 2  
+    NUM_CLASSES = 1 + 1 
        
     # Number of training steps per epoch
     STEPS_PER_EPOCH = 100
@@ -69,7 +69,8 @@ class CustomConfig(Config):
     # Skip detections with < 90% confidence
     DETECTION_MIN_CONFIDENCE = 0.9
 
-
+    LEARNING_RATE = 0.01
+       
 ############################################################
 #  Dataset
 ############################################################
@@ -82,8 +83,7 @@ class CustomDataset(utils.Dataset):
         subset: Subset to load: train or val
         """
         # Add classes. We have only one class to add.
-        self.add_class("object", 1, "dog")
-        self.add_class("object", 2, "cat")
+        self.add_class("dog", 1, "dog")
 
 
         # Train or validation dataset?
@@ -120,9 +120,6 @@ class CustomDataset(utils.Dataset):
             # the outline of each object instance. There are stores in the
             # shape_attributes (see json format above)
             polygons = [r['shape_attributes'] for r in a['regions']] 
-            objects = [s['region_attributes']['name'] for s in a['regions']]
-            print("objects:",objects)
-            name_dict = {"dog": 1,"cat": 2}
             # key = tuple(name_dict)
             num_ids = [name_dict[a] for a in objects]
      
@@ -136,12 +133,11 @@ class CustomDataset(utils.Dataset):
             height, width = image.shape[:2]
 
             self.add_image(
-                "object",  ## for a single class just add the name here
+                "dog",  ## for a single class just add the name here
                 image_id=a['filename'],  # use file name as a unique image id
                 path=image_path,
                 width=width, height=height,
-                polygons=polygons,
-                num_ids=num_ids)
+                polygons=polygons)
 
     def load_mask(self, image_id):
         """Generate instance masks for an image.
@@ -152,15 +148,15 @@ class CustomDataset(utils.Dataset):
         """
         # If not a bottle dataset image, delegate to parent class.
         image_info = self.image_info[image_id]
-        if image_info["source"] != "object":
+        if image_info["source"] != "dog":
             return super(self.__class__, self).load_mask(image_id)
 
         # Convert polygons to a bitmap mask of shape
         # [height, width, instance_count]
         info = self.image_info[image_id]
-        if info["source"] != "object":
+        if info["source"] != "dog":
             return super(self.__class__, self).load_mask(image_id)
-        num_ids = info['num_ids']
+
         mask = np.zeros([info["height"], info["width"], len(info["polygons"])],
                         dtype=np.uint8)
         for i, p in enumerate(info["polygons"]):
@@ -172,13 +168,12 @@ class CustomDataset(utils.Dataset):
         # Return mask, and array of class IDs of each instance. Since we have
         # one class ID only, we return an array of 1s
         # Map class names to class IDs.
-        num_ids = np.array(num_ids, dtype=np.int32)
-        return mask, num_ids
+        return mask, np.ones([mask.shape[-1]], dtype=np.int32)
 
     def image_reference(self, image_id):
         """Return the path of the image."""
         info = self.image_info[image_id]
-        if info["source"] == "object":
+        if info["source"] == "dog":
             return info["path"]
         else:
             super(self.__class__, self).image_reference(image_id)
@@ -203,7 +198,7 @@ def train(model):
     print("Training network heads")
     model.train(dataset_train, dataset_val,
                 learning_rate=config.LEARNING_RATE,
-                epochs=10,
+                epochs=30,
                 layers='heads')
 
 
