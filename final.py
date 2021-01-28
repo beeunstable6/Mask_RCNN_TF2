@@ -18,6 +18,11 @@ Usage: import the module (see Jupyter notebooks for examples), or run from
     # Apply color splash to video using the last weights you trained
     python3 bottle.py splash --weights=last --video=<URL or path to file>
 """
+if __name__ == '__main__':
+    import matplotlib
+    # Agg backend runs without a display
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
 
 import os
 import sys
@@ -27,7 +32,6 @@ import numpy as np
 import skimage.draw
 import cv2
 from mrcnn.visualize import display_instances
-import matplotlib.pyplot as plt
 
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../../")
@@ -154,9 +158,7 @@ class CustomDataset(utils.Dataset):
         # Convert polygons to a bitmap mask of shape
         # [height, width, instance_count]
         info = self.image_info[image_id]
-        if info["source"] != "dog":
-            return super(self.__class__, self).load_mask(image_id)
-
+        
         mask = np.zeros([info["height"], info["width"], len(info["polygons"])],
                         dtype=np.uint8)
         for i, p in enumerate(info["polygons"]):
@@ -168,7 +170,7 @@ class CustomDataset(utils.Dataset):
         # Return mask, and array of class IDs of each instance. Since we have
         # one class ID only, we return an array of 1s
         # Map class names to class IDs.
-        return mask, np.ones([mask.shape[-1]], dtype=np.int32)
+        return mask.astype(np.bool), np.ones([mask.shape[-1]], dtype=np.int32)
 
     def image_reference(self, image_id):
         """Return the path of the image."""
