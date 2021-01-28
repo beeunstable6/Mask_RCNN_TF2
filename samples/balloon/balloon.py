@@ -94,7 +94,7 @@ class BalloonDataset(utils.Dataset):
         subset: Subset to load: train or val
         """
         # Add classes. We have only one class to add.
-        self.add_class("balloon", 1, "balloon")
+        self.add_class("balloon", 1, "dog")
 
         # Train or validation dataset?
         assert subset in ["train", "val"]
@@ -226,7 +226,7 @@ def detect_and_color_splash(model, image_path=None, video_path=None):
 
     # Image or video?
     if image_path:
-        class_names=['BG','balloon']
+        class_names=['BG','dog']
         # Run model detection and generate the color splash effect
         print("Running on {}".format(args.image))
         # Read image
