@@ -73,7 +73,7 @@ class BalloonConfig(Config):
     # Skip detections with < 90% confidence
     DETECTION_MIN_CONFIDENCE = 0.9
 
-    LEARNING_RATE = 0.02
+    LEARNING_RATE = 0.0005
 
 ############################################################
 #  Dataset
